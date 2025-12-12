@@ -36,14 +36,14 @@ function About() {
               <img src={laptopImg} alt="about" className="img-fluid" />
             </Col>
           </Row>
-          <h1 className="project-heading">
-            Professional <strong className="purple">Skillset </strong>
+          <h1 className="project-heading" style={{ paddingBottom: "20px", paddingLeft: "10px", paddingRight: "10px" }}>
+            My <strong className="purple">Algorithm</strong> Competencies
           </h1>
 
           <Techstack />
 
           <h1 className="project-heading">
-            <strong className="purple">Tools</strong> I use
+            Programming <strong className="purple">Languages</strong>
           </h1>
           <Toolstack />
 
