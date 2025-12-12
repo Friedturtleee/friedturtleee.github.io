@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import myImg from "../../Assets/avatar.svg";
 import Tilt from "react-parallax-tilt";
-import { fetchUserInfo } from '@qatadaazzeh/atcoder-api';
 
 function Home2() {
   const [atcoderRating, setAtcoderRating] = useState("Loading...");
