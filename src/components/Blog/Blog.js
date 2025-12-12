@@ -5,7 +5,7 @@ import { signInWithPopup, signOut } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
 import Particle from "../Particle";
 import { AiOutlineGoogle } from "react-icons/ai";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 function Blog() {
   const [user, setUser] = useState(null);
