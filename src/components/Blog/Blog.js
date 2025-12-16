@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form, Modal, Badge } from "react-bootstrap";
-import { auth, googleProvider, db, storage } from "../../firebase";
+import { auth, googleProvider, db } from "../../firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "firebase/firestore";
 import Particle from "../Particle";
 import { AiOutlineGoogle, AiOutlineEdit } from "react-icons/ai";
 import { MdDelete, MdAttachFile, MdFileDownload } from "react-icons/md";
@@ -94,28 +93,37 @@ function Blog() {
 
     setLoading(true);
     try {
-      // 上傳附件
-      const uploadedAttachments = await uploadAttachments();
-
       if (editingBlog) {
         // 更新現有文章
+        const uploadedAttachments = await uploadAttachments(editingBlog.id);
         await updateDoc(doc(db, "blogs", editingBlog.id), {
           title: newBlog.title,
           content: newBlog.content,
-          attachments: uploadedAttachments,
+          attachments: uploadedAttachments.length > 0 ? uploadedAttachments : editingBlog.attachments,
           updatedAt: new Date().toISOString()
         });
         alert("更新成功！");
       } else {
-        // 新增文章
-        await addDoc(collection(db, "blogs"), {
+        // 先新增文章以獲取 ID
+        const docRef = await addDoc(collection(db, "blogs"), {
           title: newBlog.title,
           content: newBlog.content,
           author: user.displayName || user.email,
           authorEmail: user.email,
-          attachments: uploadedAttachments,
+          attachments: [],
           createdAt: new Date().toISOString()
         });
+        
+        // 上傳附件
+        const uploadedAttachments = await uploadAttachments(docRef.id);
+        
+        // 更新文章附件資訊
+        if (uploadedAttachments.length > 0) {
+          await updateDoc(doc(db, "blogs", docRef.id), {
+            attachments: uploadedAttachments
+          });
+        }
+        
         alert("發布成功！");
       }
 
@@ -132,8 +140,8 @@ function Blog() {
     }
   };
 
-  // 上傳附件到 Firebase Storage
-  const uploadAttachments = async () => {
+  // 上傳附件（轉換為 base64 並分塊存儲）
+  const uploadAttachments = async (blogId) => {
     if (attachments.length === 0) return [];
 
     setUploadingFiles(true);
@@ -147,29 +155,51 @@ function Blog() {
           continue;
         }
 
-        const timestamp = Date.now();
-        const fileName = `${timestamp}_${file.name}`;
-        const storageRef = ref(storage, `blog-attachments/${fileName}`);
+        const fileId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const base64 = await convertToBase64(file);
         
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
+        // 分塊大小：800KB (留有餘地)
+        const chunkSize = 800 * 1024;
+        const chunks = [];
         
+        for (let i = 0; i < base64.length; i += chunkSize) {
+          chunks.push(base64.slice(i, i + chunkSize));
+        }
+
+        // 存儲分塊到子集合
+        for (let i = 0; i < chunks.length; i++) {
+          await setDoc(doc(db, `blogs/${blogId}/attachments/${fileId}/chunks/chunk_${i}`), {
+            data: chunks[i],
+            index: i
+          });
+        }
+
         uploadedFiles.push({
+          id: fileId,
           name: file.name,
-          url: downloadURL,
-          path: `blog-attachments/${fileName}`,
           size: file.size,
-          type: file.type
+          type: file.type,
+          chunks: chunks.length
         });
       }
     } catch (error) {
-      console.error("檔案上傳失敗:", error);
-      alert("檔案上傳失敗，請稍後再試");
+      console.error("檔案處理失敗:", error);
+      alert("檔案處理失敗，請稍後再試");
     } finally {
       setUploadingFiles(false);
     }
 
     return uploadedFiles;
+  };
+
+  // 將文件轉換為 base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
   };
 
   // 處理檔案選擇
@@ -181,6 +211,35 @@ function Blog() {
   // 移除附件
   const removeAttachment = (index) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // 處理附件下載（從 Firestore 重組文件）
+  const handleDownloadAttachment = async (file, blogId) => {
+    try {
+      // 獲取所有分塊
+      const chunksQuery = query(
+        collection(db, `blogs/${blogId}/attachments/${file.id}/chunks`),
+        orderBy("index")
+      );
+      const chunksSnapshot = await getDocs(chunksQuery);
+      
+      // 重組 base64
+      let base64 = '';
+      chunksSnapshot.docs.forEach(doc => {
+        base64 += doc.data().data;
+      });
+
+      // 創建下載連結
+      const link = document.createElement('a');
+      link.href = base64;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('下載失敗:', error);
+      alert('下載失敗，請稍後再試');
+    }
   };
 
   // 開始編輯
@@ -204,13 +263,17 @@ function Blog() {
     if (!window.confirm("確定要刪除這篇文章嗎？")) return;
 
     try {
-      // 刪除附件
+      // 刪除所有附件的分塊
       for (const attachment of attachments) {
         try {
-          const fileRef = ref(storage, attachment.path);
-          await deleteObject(fileRef);
+          const chunksQuery = query(collection(db, `blogs/${blogId}/attachments/${attachment.id}/chunks`));
+          const chunksSnapshot = await getDocs(chunksQuery);
+          
+          for (const chunkDoc of chunksSnapshot.docs) {
+            await deleteDoc(chunkDoc.ref);
+          }
         } catch (error) {
-          console.error("刪除附件失敗:", error);
+          console.error("刪除附件分塊失敗:", error);
         }
       }
 
@@ -317,30 +380,26 @@ function Blog() {
                         </h6>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                           {blog.attachments.map((file, index) => (
-                            <a
+                            <Badge
                               key={index}
-                              href={file.url}
-                              download={file.name}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ textDecoration: "none" }}
+                              bg="secondary"
+                              style={{
+                                padding: "8px 12px",
+                                fontSize: "0.9em",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                                transition: "all 0.3s ease",
+                                backgroundColor: "#6c757d",
+                                border: "none"
+                              }}
+                              onClick={() => handleDownloadAttachment(file, blog.id)}
                             >
-                              <Badge
-                                bg="secondary"
-                                style={{
-                                  padding: "8px 12px",
-                                  fontSize: "0.9em",
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "5px"
-                                }}
-                              >
-                                <MdFileDownload size={16} />
-                                {file.name}
-                                {file.size && ` (${(file.size / 1024 / 1024).toFixed(2)} MB)`}
-                              </Badge>
-                            </a>
+                              <MdFileDownload size={16} />
+                              {file.name}
+                              {file.size && ` (${(file.size / 1024 / 1024).toFixed(2)} MB)`}
+                            </Badge>
                           ))}
                         </div>
                       </div>
