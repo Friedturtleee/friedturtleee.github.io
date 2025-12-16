@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form, Modal, Badge } from "react-bootstrap";
 import { auth, googleProvider, db } from "../../firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, setDoc, writeBatch } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch } from "firebase/firestore";
 import Particle from "../Particle";
 import { AiOutlineGoogle, AiOutlineEdit } from "react-icons/ai";
 import { MdDelete, MdAttachFile, MdFileDownload } from "react-icons/md";
