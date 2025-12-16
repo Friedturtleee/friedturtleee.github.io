@@ -141,6 +141,12 @@ function Blog() {
 
     try {
       for (const file of attachments) {
+        // 限制文件大小為 15MB
+        if (file.size > 15 * 1024 * 1024) {
+          alert(`檔案 ${file.name} 超過 15MB 限制，已跳過`);
+          continue;
+        }
+
         const timestamp = Date.now();
         const fileName = `${timestamp}_${file.name}`;
         const storageRef = ref(storage, `blog-attachments/${fileName}`);
@@ -311,23 +317,30 @@ function Blog() {
                         </h6>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                           {blog.attachments.map((file, index) => (
-                            <Badge
+                            <a
                               key={index}
-                              bg="secondary"
-                              style={{
-                                padding: "8px 12px",
-                                fontSize: "0.9em",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "5px"
-                              }}
-                              onClick={() => window.open(file.url, '_blank')}
+                              href={file.url}
+                              download={file.name}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: "none" }}
                             >
-                              <MdFileDownload size={16} />
-                              {file.name}
-                              {file.size && ` (${(file.size / 1024).toFixed(1)} KB)`}
-                            </Badge>
+                              <Badge
+                                bg="secondary"
+                                style={{
+                                  padding: "8px 12px",
+                                  fontSize: "0.9em",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px"
+                                }}
+                              >
+                                <MdFileDownload size={16} />
+                                {file.name}
+                                {file.size && ` (${(file.size / 1024 / 1024).toFixed(2)} MB)`}
+                              </Badge>
+                            </a>
                           ))}
                         </div>
                       </div>
@@ -398,7 +411,7 @@ function Blog() {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label style={{ color: "white" }}>
-                  <MdAttachFile /> 附件
+                  <MdAttachFile /> 附件（單個文件最大 15MB）
                 </Form.Label>
                 <Form.Control
                   type="file"
