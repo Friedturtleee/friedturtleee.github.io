@@ -84,16 +84,6 @@ function NavBar() {
             <Nav.Item>
               <Nav.Link
                 as={Link}
-                to="/resume"
-                onClick={() => updateExpanded(false)}
-              >
-                <CgFileDocument style={{ marginBottom: "2px" }} /> Resume
-              </Nav.Link>
-            </Nav.Item>
-
-            <Nav.Item>
-              <Nav.Link
-                as={Link}
                 to="/blog"
                 onClick={() => updateExpanded(false)}
               >
@@ -101,9 +91,19 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
 
+            <Nav.Item>
+              <Nav.Link
+                as={Link}
+                to="/credits"
+                onClick={() => updateExpanded(false)}
+              >
+                <CgFileDocument style={{ marginBottom: "2px" }} /> Credits
+              </Nav.Link>
+            </Nav.Item>
+
             <Nav.Item className="fork-btn">
               <Button
-                href="https://github.com/Friedturtleee/Friedturtleee-Website"
+                href="https://github.com/Friedturtleee"
                 target="_blank"
                 className="fork-btn-inner"
               >
