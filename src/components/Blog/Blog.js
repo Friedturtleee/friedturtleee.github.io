@@ -30,9 +30,33 @@ function Blog() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       setUser(result.user);
+      console.log("登入成功:", result.user);
     } catch (error) {
-      console.error("登入失敗:", error);
-      alert("登入失敗，請稍後再試");
+      console.error("登入失敗詳細錯誤:", error);
+      console.error("錯誤代碼:", error.code);
+      console.error("錯誤訊息:", error.message);
+      
+      let errorMessage = "登入失敗：";
+      switch (error.code) {
+        case "auth/popup-closed-by-user":
+          errorMessage += "您關閉了登入視窗";
+          break;
+        case "auth/popup-blocked":
+          errorMessage += "彈出視窗被瀏覽器封鎖，請允許彈出視窗";
+          break;
+        case "auth/unauthorized-domain":
+          errorMessage += "此網域未在 Firebase 授權列表中，請在 Firebase Console 中新增授權網域";
+          break;
+        case "auth/operation-not-allowed":
+          errorMessage += "Google 登入未啟用，請在 Firebase Console 中啟用 Google 身份驗證";
+          break;
+        case "auth/network-request-failed":
+          errorMessage += "網路連線失敗，請檢查網路連線";
+          break;
+        default:
+          errorMessage += error.message || "請稍後再試";
+      }
+      alert(errorMessage);
     }
   };
 
