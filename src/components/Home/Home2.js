@@ -36,37 +36,47 @@ function Home2() {
   };
 
   useEffect(() => {
-    // Fetch AtCoder rating - using CORS proxy
+    // Fetch AtCoder rating - 使用 CORS 代理
     const fetchAtCoderRating = async () => {
       try {
-        // Try direct API first
-        const response = await fetch('https://atcoder.jp/users/friedturtleee/history/json');
-        const data = await response.json();
-        if (data && data.length > 0) {
-          const rating = data[data.length - 1].NewRating;
-          setAtcoderRating(rating);
-          setAtcoderColor(getAtCoderColor(rating));
-        } else {
-          setAtcoderRating("N/A");
-          setAtcoderColor("#808080");
-        }
-      } catch (error) {
-        // If direct access fails, try with CORS proxy
-        try {
-          const proxyResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://atcoder.jp/users/friedturtleee/history/json')}`);
-          const proxyData = await proxyResponse.json();
-          if (proxyData && proxyData.length > 0) {
-            const rating = proxyData[proxyData.length - 1].NewRating;
+        // 使用 corsproxy.io 作為代理
+        const proxyUrl = 'https://corsproxy.io/?';
+        const apiUrl = 'https://atcoder.jp/users/friedturtleee/history/json';
+        const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.length > 0) {
+            const rating = data[data.length - 1].NewRating;
             setAtcoderRating(rating);
             setAtcoderColor(getAtCoderColor(rating));
-          } else {
-            setAtcoderRating("N/A");
-            setAtcoderColor("#808080");
+            return;
           }
-        } catch (proxyError) {
-          setAtcoderRating("N/A");
-          setAtcoderColor("#808080");
         }
+        
+        // 如果失敗，嘗試備用代理
+        try {
+          const backupProxy = 'https://api.codetabs.com/v1/proxy?quest=';
+          const backupResponse = await fetch(backupProxy + encodeURIComponent(apiUrl));
+          const backupData = await backupResponse.json();
+          
+          if (backupData && backupData.length > 0) {
+            const rating = backupData[backupData.length - 1].NewRating;
+            setAtcoderRating(rating);
+            setAtcoderColor(getAtCoderColor(rating));
+            return;
+          }
+        } catch (backupError) {
+          console.log('備用代理也失敗:', backupError);
+        }
+        
+        // 所有方法都失敗
+        setAtcoderRating("N/A");
+        setAtcoderColor("#808080");
+      } catch (error) {
+        console.log('AtCoder API 失敗:', error);
+        setAtcoderRating("N/A");
+        setAtcoderColor("#808080");
       }
     };
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form, Modal, Badge } from "react-bootstrap";
 import { auth, googleProvider, db } from "../../firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, setDoc, writeBatch } from "firebase/firestore";
 import Particle from "../Particle";
 import { AiOutlineGoogle, AiOutlineEdit } from "react-icons/ai";
 import { MdDelete, MdAttachFile, MdFileDownload } from "react-icons/md";
@@ -158,20 +158,35 @@ function Blog() {
         const fileId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const base64 = await convertToBase64(file);
         
-        // 分塊大小：800KB (留有餘地)
-        const chunkSize = 800 * 1024;
+        // 分塊大小：500KB （更小的分塊以降低單次寫入負擔）
+        const chunkSize = 500 * 1024;
         const chunks = [];
         
         for (let i = 0; i < base64.length; i += chunkSize) {
           chunks.push(base64.slice(i, i + chunkSize));
         }
 
-        // 存儲分塊到子集合
-        for (let i = 0; i < chunks.length; i++) {
-          await setDoc(doc(db, `blogs/${blogId}/attachments/${fileId}/chunks/chunk_${i}`), {
-            data: chunks[i],
-            index: i
-          });
+        // 使用批次寫入，每 10 個分塊一批
+        const batchSize = 10;
+        for (let i = 0; i < chunks.length; i += batchSize) {
+          const batch = writeBatch(db);
+          const batchChunks = chunks.slice(i, i + batchSize);
+          
+          for (let j = 0; j < batchChunks.length; j++) {
+            const chunkIndex = i + j;
+            const chunkRef = doc(db, `blogs/${blogId}/attachments/${fileId}/chunks/chunk_${chunkIndex}`);
+            batch.set(chunkRef, {
+              data: batchChunks[j],
+              index: chunkIndex
+            });
+          }
+          
+          await batch.commit();
+          
+          // 添加延遲以避免超載 Firestore
+          if (i + batchSize < chunks.length) {
+            await new Promise(resolve => setTimeout(resolve, 300));
+          }
         }
 
         uploadedFiles.push({
