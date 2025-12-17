@@ -37,65 +37,81 @@ export function getDFSData() {
 
 // Dijkstra
 export function getDijkstraData() {
+  //圖結構: 帶權重的鄰接表 [[鄰居, 權重], ...]
+  const graph = [
+    [[1, 4], [2, 2]],      // 節點 0 -> 節點 1(權重4), 節點 2(權重2)
+    [[0, 4], [2, 1], [3, 4], [4, 4]], // 節點 1
+    [[0, 2], [1, 1], [4, 6]],     // 節點 2
+    [[1, 4]],              // 節點 3
+    [[1, 4], [2, 6]]       // 節點 4
+  ];
+  
   return {
     description: "Dijkstra 演算法用於找到從起點到所有其他節點的最短路徑。適用於非負權重的圖。使用優先佇列來選擇當前距離最小的節點。",
     timeComplexity: "O((V + E) log V)",
     spaceComplexity: "O(V)",
     steps: [
-      { explanation: "初始化：起點距離為 0，其他節點距離為無限大", distances: [0, Infinity, Infinity, Infinity, Infinity], current: 0, visited: [] },
-      { explanation: "處理節點 0，更新鄰居節點 1 和 2 的距離", distances: [0, 4, 2, Infinity, Infinity], current: 0, visited: [0] },
-      { explanation: "選擇距離最小的未訪問節點 2，更新其鄰居", distances: [0, 3, 2, 7, 8], current: 2, visited: [0, 2] },
-      { explanation: "選擇節點 1，更新鄰居節點 3 和 4", distances: [0, 3, 2, 7, 7], current: 1, visited: [0, 2, 1] },
-      { explanation: "選擇節點 3，無需更新", distances: [0, 3, 2, 7, 7], current: 3, visited: [0, 2, 1, 3] },
-      { explanation: "選擇節點 4，演算法完成", distances: [0, 3, 2, 7, 7], current: 4, visited: [0, 2, 1, 3, 4] }
+      { explanation: "初始化：起點距離為 0，其他節點距離為無限大", distances: [0, Infinity, Infinity, Infinity, Infinity], current: 0, visited: [], graph: graph },
+      { explanation: "處理節點 0，更新鄰居節點 1 和 2 的距離", distances: [0, 4, 2, Infinity, Infinity], current: 0, visited: [0], graph: graph },
+      { explanation: "選擇距離最小的未訪問節點 2，更新其鄰居", distances: [0, 3, 2, Infinity, 8], current: 2, visited: [0, 2], graph: graph },
+      { explanation: "選擇節點 1，更新鄰居節點 3 和 4", distances: [0, 3, 2, 7, 7], current: 1, visited: [0, 2, 1], graph: graph },
+      { explanation: "選擇節點 3，無需更新", distances: [0, 3, 2, 7, 7], current: 3, visited: [0, 2, 1, 3], graph: graph },
+      { explanation: "選擇節點 4，演算法完成", distances: [0, 3, 2, 7, 7], current: 4, visited: [0, 2, 1, 3, 4], graph: graph }
     ]
   };
 }
 
 // Bellman-Ford
 export function getBellmanFordData() {
+  const edges = [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 2]];
+  const nodes = 4;
+  
   return {
     description: "Bellman-Ford 演算法可以處理負權重邊的單源最短路徑問題，並能檢測負權環。進行 V-1 次鬆弛操作。",
     timeComplexity: "O(V × E)",
     spaceComplexity: "O(V)",
     steps: [
-      { explanation: "初始化：起點距離為 0", distances: [0, Infinity, Infinity, Infinity], edges: [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 2]], iteration: 0 },
-      { explanation: "第 1 輪鬆弛：更新邊 (0,1) 和 (0,2)", distances: [0, 4, 5, Infinity], edges: [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 2]], iteration: 1 },
-      { explanation: "第 1 輪鬆弛：更新邊 (1,2)", distances: [0, 4, 1, Infinity], edges: [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 2]], iteration: 1 },
-      { explanation: "第 2 輪鬆弛：更新邊 (2,3)", distances: [0, 4, 1, 3], edges: [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 2]], iteration: 2 },
-      { explanation: "完成所有鬆弛操作，得到最短路徑", distances: [0, 4, 1, 3], edges: [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 2]], iteration: 3 }
+      { explanation: "初始化：起點距離為 0", distances: [0, Infinity, Infinity, Infinity], edges: edges, iteration: 0, nodes: nodes },
+      { explanation: "第 1 輪鬆弛：更新邊 (0,1) 和 (0,2)", distances: [0, 4, 5, Infinity], edges: edges, iteration: 1, nodes: nodes },
+      { explanation: "第 1 輪鬆弛：更新邊 (1,2)", distances: [0, 4, 1, Infinity], edges: edges, iteration: 1, nodes: nodes },
+      { explanation: "第 2 輪鬆弛：更新邊 (2,3)", distances: [0, 4, 1, 3], edges: edges, iteration: 2, nodes: nodes },
+      { explanation: "完成所有鬆弛操作，得到最短路徑", distances: [0, 4, 1, 3], edges: edges, iteration: 3, nodes: nodes }
     ]
   };
 }
 
 // Floyd-Warshall
 export function getFloydWarshallData() {
+  const nodes = 4;
+  
   return {
     description: "Floyd-Warshall 演算法用於找到所有節點對之間的最短路徑。使用動態規劃，逐步考慮每個節點作為中間節點。",
     timeComplexity: "O(V³)",
     spaceComplexity: "O(V²)",
     steps: [
-      { explanation: "初始化距離矩陣", matrix: [[0, 3, Infinity, 7], [8, 0, 2, Infinity], [5, Infinity, 0, 1], [2, Infinity, Infinity, 0]], k: -1 },
-      { explanation: "使用節點 0 作為中間節點", matrix: [[0, 3, Infinity, 7], [8, 0, 2, 15], [5, 8, 0, 1], [2, 5, Infinity, 0]], k: 0 },
-      { explanation: "使用節點 1 作為中間節點", matrix: [[0, 3, 5, 7], [8, 0, 2, 15], [5, 8, 0, 1], [2, 5, 7, 0]], k: 1 },
-      { explanation: "使用節點 2 作為中間節點", matrix: [[0, 3, 5, 6], [7, 0, 2, 3], [5, 8, 0, 1], [2, 5, 7, 0]], k: 2 },
-      { explanation: "使用節點 3 作為中間節點，完成", matrix: [[0, 3, 5, 6], [7, 0, 2, 3], [3, 6, 0, 1], [2, 5, 7, 0]], k: 3 }
+      { explanation: "初始化距離矩陣", matrix: [[0, 3, Infinity, 7], [8, 0, 2, Infinity], [5, Infinity, 0, 1], [2, Infinity, Infinity, 0]], k: -1, nodes: nodes },
+      { explanation: "使用節點 0 作為中間節點", matrix: [[0, 3, Infinity, 7], [8, 0, 2, 15], [5, 8, 0, 1], [2, 5, Infinity, 0]], k: 0, nodes: nodes },
+      { explanation: "使用節點 1 作為中間節點", matrix: [[0, 3, 5, 7], [8, 0, 2, 15], [5, 8, 0, 1], [2, 5, 7, 0]], k: 1, nodes: nodes },
+      { explanation: "使用節點 2 作為中間節點", matrix: [[0, 3, 5, 6], [7, 0, 2, 3], [5, 8, 0, 1], [2, 5, 7, 0]], k: 2, nodes: nodes },
+      { explanation: "使用節點 3 作為中間節點，完成", matrix: [[0, 3, 5, 6], [7, 0, 2, 3], [3, 6, 0, 1], [2, 5, 7, 0]], k: 3, nodes: nodes }
     ]
   };
 }
 
 // Kruskal's MST
 export function getKruskalData() {
+  const nodes = 4;
+  
   return {
     description: "Kruskal 演算法用於找到無向圖的最小生成樹 (MST)。按邊的權重從小到大排序，使用並查集 (DSU) 避免形成環。",
     timeComplexity: "O(E log E)",
     spaceComplexity: "O(V)",
     steps: [
-      { explanation: "將所有邊按權重排序", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}], selected: [], mstWeight: 0 },
-      { explanation: "選擇邊 (0,1)，權重 1", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}], selected: [{u: 0, v: 1, w: 1}], mstWeight: 1 },
-      { explanation: "選擇邊 (2,3)，權重 2", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}], selected: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}], mstWeight: 3 },
-      { explanation: "選擇邊 (1,2)，權重 3", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}], selected: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}], mstWeight: 6 },
-      { explanation: "MST 完成，總權重為 6", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}], selected: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}], mstWeight: 6 }
+      { explanation: "將所有邊按權重排序", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}, {u: 1, v: 3, w: 5}], selected: [], mstWeight: 0, nodes: nodes },
+      { explanation: "選擇邊 (0,1)，權重 1", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}, {u: 1, v: 3, w: 5}], selected: [{u: 0, v: 1, w: 1}], mstWeight: 1, nodes: nodes },
+      { explanation: "選擇邊 (2,3)，權重 2", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}, {u: 1, v: 3, w: 5}], selected: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}], mstWeight: 3, nodes: nodes },
+      { explanation: "選擇邊 (1,2)，權重 3，連接兩個連通分量", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}, {u: 1, v: 3, w: 5}], selected: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}], mstWeight: 6, nodes: nodes },
+      { explanation: "MST 完成，總權重為 6", edges: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}, {u: 0, v: 3, w: 4}, {u: 1, v: 3, w: 5}], selected: [{u: 0, v: 1, w: 1}, {u: 2, v: 3, w: 2}, {u: 1, v: 2, w: 3}], mstWeight: 6, nodes: nodes }
     ]
   };
 }
@@ -227,10 +243,10 @@ export function getSegmentTreeData() {
     timeComplexity: "O(log n) 查詢/更新",
     spaceComplexity: "O(n)",
     steps: [
-      { explanation: "原始陣列 [1, 3, 5, 7, 9, 11]", array: [1, 3, 5, 7, 9, 11], tree: [], operation: "初始化" },
-      { explanation: "建立線段樹", array: [1, 3, 5, 7, 9, 11], tree: [36, 16, 20, 4, 12, 9, 11, 1, 3, 5, 7], operation: "建樹" },
-      { explanation: "查詢區間 [1, 3] 的和", array: [1, 3, 5, 7, 9, 11], tree: [36, 16, 20, 4, 12, 9, 11, 1, 3, 5, 7], operation: "查詢 [1,3]", queryResult: 15 },
-      { explanation: "更新 index 2 的值為 6", array: [1, 3, 6, 7, 9, 11], tree: [37, 17, 20, 4, 13, 9, 11, 1, 3, 6, 7], operation: "更新 [2] = 6" }
+      { explanation: "原始陣列 [1, 3, 5, 7]", array: [1, 3, 5, 7], tree: [16, 4, 12, 1, 3, 5, 7], operation: "初始化", highlight: [] },
+      { explanation: "建立線段樹：根節點 = 1+3+5+7 = 16", array: [1, 3, 5, 7], tree: [16, 4, 12, 1, 3, 5, 7], operation: "建樹", highlight: [0] },
+      { explanation: "查詢區間 [1, 2] 的和 = 3+5 = 8", array: [1, 3, 5, 7], tree: [16, 4, 12, 1, 3, 5, 7], operation: "查詢 [1,2]", queryResult: 8, highlight: [0, 1, 4, 5] },
+      { explanation: "更新 index 1 的值為 6", array: [1, 6, 5, 7], tree: [19, 7, 12, 1, 6, 5, 7], operation: "更新 [1] = 6", highlight: [0, 1, 4], updated: [0, 1, 4] }
     ]
   };
 }
@@ -407,14 +423,14 @@ export function getLCSData() {
     timeComplexity: "O(m × n)",
     spaceComplexity: "O(m × n)",
     steps: [
-      { explanation: "字串1：ABCDGH，字串2：AEDFHR", s1: "ABCDGH", s2: "AEDFHR", dp: [], phase: "init" },
-      { explanation: "初始化 DP 表格（7×7）", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]], i: 0, j: 0, phase: "dp-init" },
-      { explanation: "dp[1][1]：A = A ✓，dp[1][1] = dp[0][0] + 1 = 1", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,1,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]], i: 1, j: 1, match: true, phase: "filling" },
-      { explanation: "dp[1][2]：A ≠ E，dp[1][2] = max(dp[0][2], dp[1][1]) = 1", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,1,1,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]], i: 1, j: 2, match: false, phase: "filling" },
-      { explanation: "繼續填充表格...", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,2,2,2,2],[0,1,1,2,2,2,2],[0,1,1,2,2,3,3]], i: 3, j: 3, phase: "filling" },
-      { explanation: "dp[4][3]：D = D ✓，dp[4][3] = dp[3][2] + 1 = 2", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,2,2,2,2],[0,1,1,2,2,2,2],[0,1,1,2,2,3,3]], i: 4, j: 3, match: true, phase: "filling" },
-      { explanation: "dp[6][6]：H = R ✗，dp[6][6] = max(dp[5][6], dp[6][5]) = 3", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,2,2,2,2],[0,1,1,2,2,2,2],[0,1,1,2,2,3,3]], i: 6, j: 6, phase: "filling" },
-      { explanation: "回溯找出 LCS：ADH（長度 3）", s1: "ABCDGH", s2: "AEDFHR", dp: [[0,0,0,0,0,0,0],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,1,1,1,1],[0,1,1,2,2,2,2],[0,1,1,2,2,2,2],[0,1,1,2,2,3,3]], lcs: "ADH", length: 3, backtrack: [[1,1],[4,3],[6,6]], phase: "complete" }
+      { explanation: "字串1：ABC，字串2：AC", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,0,0],[0,0,0],[0,0,0]], i: 0, j: 0, phase: "init" },
+      { explanation: "dp[1][1]：A = A ✓，dp[1][1] = 1", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,0],[0,0,0],[0,0,0]], i: 1, j: 1, match: true, phase: "filling" },
+      { explanation: "dp[1][2]：A ≠ C，dp[1][2] = max(1, 0) = 1", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,1],[0,0,0],[0,0,0]], i: 1, j: 2, match: false, phase: "filling" },
+      { explanation: "dp[2][1]：B ≠ A，dp[2][1] = 1", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,1],[0,1,0],[0,0,0]], i: 2, j: 1, match: false, phase: "filling" },
+      { explanation: "dp[2][2]：B ≠ C，dp[2][2] = 1", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,1],[0,1,1],[0,0,0]], i: 2, j: 2, match: false, phase: "filling" },
+      { explanation: "dp[3][1]：C ≠ A，dp[3][1] = 1", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,1],[0,1,1],[0,1,0]], i: 3, j: 1, match: false, phase: "filling" },
+      { explanation: "dp[3][2]：C = C ✓，dp[3][2] = 2", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,1],[0,1,1],[0,1,2]], i: 3, j: 2, match: true, phase: "filling" },
+      { explanation: "找出 LCS：AC（長度 2）", s1: "ABC", s2: "AC", dp: [[0,0,0],[0,1,1],[0,1,1],[0,1,2]], lcs: "AC", length: 2, backtrack: [[1,1],[3,2]], phase: "complete" }
     ]
   };
 }

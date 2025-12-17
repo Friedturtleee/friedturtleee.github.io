@@ -273,52 +273,139 @@ export const SlidingWindowVisualization = ({ stepData }) => {
 export const SegmentTreeVisualization = ({ stepData }) => {
   if (!stepData) return null;
 
-  const { array, tree, operation, queryResult } = stepData;
+  const { array, tree, operation, queryResult, highlight = [], updated = [] } = stepData;
+
+  // 線段樹節點渲染
+  const renderTree = () => {
+    if (!tree || tree.length === 0) return null;
+
+    // 定義節點位置 (二元樹結構)
+    const positions = [
+      { x: 150, y: 30, index: 0 },        // 根節點
+      { x: 90, y: 90, index: 1 },         // 左子樹
+      { x: 210, y: 90, index: 2 },        // 右子樹
+      { x: 50, y: 150, index: 3 },        // 葉節點
+      { x: 130, y: 150, index: 4 },
+      { x: 170, y: 150, index: 5 },
+      { x: 250, y: 150, index: 6 }
+    ];
+
+    const elements = [];
+
+    // 繪製連線
+    const connections = [
+      [0, 1], [0, 2], // 根到左右子樹
+      [1, 3], [1, 4], // 左子樹
+      [2, 5], [2, 6]  // 右子樹
+    ];
+
+    connections.forEach(([from, to]) => {
+      if (tree[from] !== undefined && tree[to] !== undefined) {
+        const fromPos = positions.find(p => p.index === from);
+        const toPos = positions.find(p => p.index === to);
+        if (fromPos && toPos) {
+          const isHighlight = highlight.includes(from) && highlight.includes(to);
+          elements.push(
+            <line
+              key={`edge-${from}-${to}`}
+              x1={fromPos.x}
+              y1={fromPos.y}
+              x2={toPos.x}
+              y2={toPos.y}
+              stroke={isHighlight ? "#51cf66" : "rgba(199, 112, 240, 0.4)"}
+              strokeWidth={isHighlight ? "3" : "2"}
+              style={{ transition: "all 0.5s ease" }}
+            />
+          );
+        }
+      }
+    });
+
+    // 繪製節點
+    positions.forEach(({ x, y, index }) => {
+      if (tree[index] === undefined) return;
+      
+      const isHighlight = highlight.includes(index);
+      const isUpdated = updated.includes(index);
+      
+      elements.push(
+        <g key={`node-${index}`}>
+          <circle
+            cx={x}
+            cy={y}
+            r="20"
+            fill={isUpdated ? "#ff6b6b" : isHighlight ? "#51cf66" : "#1a1a2e"}
+            stroke={isUpdated ? "#ff6b6b" : isHighlight ? "#51cf66" : "#4ecdc4"}
+            strokeWidth="2"
+            style={{
+              filter: isHighlight || isUpdated ? `drop-shadow(0 0 8px ${isUpdated ? "#ff6b6b" : "#51cf66"})` : "none",
+              transition: "all 0.5s ease"
+            }}
+          />
+          <text
+            x={x}
+            y={y + 5}
+            textAnchor="middle"
+            fill="white"
+            fontSize="14"
+            fontWeight="bold"
+          >
+            {tree[index]}
+          </text>
+          <text
+            x={x}
+            y={y + 35}
+            textAnchor="middle"
+            fill="#888"
+            fontSize="10"
+          >
+            [{index}]
+          </text>
+        </g>
+      );
+    });
+
+    return elements;
+  };
 
   return (
-    <div style={{ width: "100%", maxWidth: "800px" }}>
+    <div style={{ width: "100%", maxWidth: "600px" }}>
       <div style={{ marginBottom: "15px", textAlign: "center" }}>
         <span style={{ color: "#c770f0", fontSize: "1.2em" }}>
           操作: {operation}
         </span>
         {queryResult !== undefined && (
           <span style={{ marginLeft: "20px", color: "#51cf66", fontSize: "1.1em" }}>
-            查詢結果: {queryResult}
+            結果: {queryResult}
           </span>
         )}
       </div>
 
-      <div style={{ marginBottom: "20px", textAlign: "center", color: "#c770f0" }}>
+      {/* 線段樹圖形 */}
+      {tree.length > 0 && (
+        <div style={{ position: "relative", width: "100%", paddingTop: "60%", marginBottom: "20px" }}>
+          <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }} viewBox="0 0 300 200">
+            {renderTree()}
+          </svg>
+        </div>
+      )}
+
+      {/* 原始陣列 */}
+      <div style={{ marginTop: "20px", textAlign: "center", color: "#c770f0", fontSize: "0.9em" }}>
         原始陣列
       </div>
       <div className="array-container">
         {array.map((value, idx) => (
-          <div key={`array-${idx}`} className="array-element">
+          <div 
+            key={`array-${idx}`} 
+            className="array-element"
+            style={{ transition: "all 0.5s ease" }}
+          >
             <div style={{ fontSize: "0.8em", color: "#aaa" }}>[{idx}]</div>
             <div style={{ fontSize: "1.2em", fontWeight: "bold" }}>{value}</div>
           </div>
         ))}
       </div>
-
-      {tree.length > 0 && (
-        <>
-          <div style={{ marginTop: "30px", marginBottom: "20px", textAlign: "center", color: "#4ecdc4" }}>
-            線段樹（部分節點）
-          </div>
-          <div className="array-container">
-            {tree.slice(0, Math.min(15, tree.length)).map((value, idx) => (
-              <div
-                key={`tree-${idx}`}
-                className="array-element"
-                style={{ borderColor: "#4ecdc4", backgroundColor: "rgba(78, 205, 196, 0.2)" }}
-              >
-                <div style={{ fontSize: "0.7em", color: "#aaa" }}>節點{idx}</div>
-                <div style={{ fontSize: "1.1em", fontWeight: "bold" }}>{value}</div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 };

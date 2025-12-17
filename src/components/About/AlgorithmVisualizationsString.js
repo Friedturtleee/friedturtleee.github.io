@@ -399,18 +399,24 @@ export const LCSVisualization = ({ stepData }) => {
   const { s1, s2, dp, i, j, match, lcs, length, backtrack } = stepData;
 
   return (
-    <div className="algorithm-container">
-      {/* 兩個字串 */}
-      <div style={{ display: "flex", gap: "30px", marginBottom: "20px", justifyContent: "center" }}>
-        <div>
-          <div style={{ marginBottom: "8px", fontSize: "14px", color: "#4ecdc4" }}>字串 1:</div>
-          <div className="string-display">
+    <div className="algorithm-container" style={{ maxWidth: "500px", margin: "0 auto" }}>
+      {/* 兩個字串 - 橫向排列更緊湊 */}
+      <div style={{ display: "flex", gap: "20px", marginBottom: "20px", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ color: "#4ecdc4", fontSize: "14px", fontWeight: "bold" }}>S1:</span>
+          <div className="string-display" style={{ display: "flex", gap: "4px" }}>
             {s1.split('').map((char, idx) => (
               <div
                 key={idx}
                 className="string-char"
                 style={{
-                  background: idx + 1 === i ? "#ff6b6b" : "#2a2a3e"
+                  background: idx + 1 === i ? "#ff6b6b" : backtrack?.some(([bi]) => bi === idx + 1) ? "#51cf66" : "#2a2a3e",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "2px solid " + (idx + 1 === i ? "#ff6b6b" : backtrack?.some(([bi]) => bi === idx + 1) ? "#51cf66" : "#555"),
+                  transition: "all 0.5s ease"
                 }}
               >
                 {char}
@@ -418,15 +424,22 @@ export const LCSVisualization = ({ stepData }) => {
             ))}
           </div>
         </div>
-        <div>
-          <div style={{ marginBottom: "8px", fontSize: "14px", color: "#f9ca24" }}>字串 2:</div>
-          <div className="string-display">
+        
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ color: "#f9ca24", fontSize: "14px", fontWeight: "bold" }}>S2:</span>
+          <div className="string-display" style={{ display: "flex", gap: "4px" }}>
             {s2.split('').map((char, idx) => (
               <div
                 key={idx}
                 className="string-char"
                 style={{
-                  background: idx + 1 === j ? "#ff6b6b" : "#2a2a3e"
+                  background: idx + 1 === j ? "#ff6b6b" : backtrack?.some(([, bj]) => bj === idx + 1) ? "#51cf66" : "#2a2a3e",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "2px solid " + (idx + 1 === j ? "#ff6b6b" : backtrack?.some(([, bj]) => bj === idx + 1) ? "#51cf66" : "#555"),
+                  transition: "all 0.5s ease"
                 }}
               >
                 {char}
@@ -436,43 +449,45 @@ export const LCSVisualization = ({ stepData }) => {
         </div>
       </div>
 
-      {/* DP 表格 */}
+      {/* 緊湊的 DP 表格 */}
       {dp && dp.length > 0 && (
-        <div className="dp-table-container" style={{ overflowX: "auto", marginTop: "20px" }}>
-          <table className="dp-table" style={{ margin: "0 auto", borderCollapse: "collapse" }}>
+        <div className="dp-table-container" style={{ overflowX: "auto", marginTop: "15px" }}>
+          <table className="dp-table" style={{ margin: "0 auto", borderCollapse: "collapse", fontSize: "14px" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "8px", background: "#1a1a2e", border: "1px solid #555" }}></td>
-                <td style={{ padding: "8px", background: "#1a1a2e", border: "1px solid #555", color: "#888" }}>ε</td>
+                <td style={{ padding: "6px 10px", background: "#1a1a2e", border: "1px solid #555", color: "#888", fontWeight: "bold" }}>\\</td>
+                <td style={{ padding: "6px 10px", background: "#1a1a2e", border: "1px solid #555", color: "#888" }}>ε</td>
                 {s2.split('').map((char, idx) => (
-                  <td key={idx} style={{ padding: "8px", background: "#1a1a2e", border: "1px solid #555", color: "#f9ca24" }}>
+                  <td key={idx} style={{ padding: "6px 10px", background: "#1a1a2e", border: "1px solid #555", color: "#f9ca24", fontWeight: "bold" }}>
                     {char}
                   </td>
                 ))}
               </tr>
               {dp.map((row, rowIdx) => (
                 <tr key={rowIdx}>
-                  <td style={{ padding: "8px", background: "#1a1a2e", border: "1px solid #555", color: rowIdx === 0 ? "#888" : "#4ecdc4" }}>
+                  <td style={{ padding: "6px 10px", background: "#1a1a2e", border: "1px solid #555", color: rowIdx === 0 ? "#888" : "#4ecdc4", fontWeight: "bold" }}>
                     {rowIdx === 0 ? "ε" : s1[rowIdx - 1]}
                   </td>
                   {row.map((val, colIdx) => {
-                    const isBacktrack = backtrack && backtrack.some(([bi, bj]) => bi === rowIdx && bj === colIdx);
+                    const isBacktrack = backtrack?.some(([bi, bj]) => bi === rowIdx && bj === colIdx);
                     const isCurrent = rowIdx === i && colIdx === j;
                     return (
                       <td
                         key={colIdx}
                         className="matrix-cell"
                         style={{
-                          padding: "8px",
-                          background: isBacktrack ? "#4ecdc4" : isCurrent ? "#ff6b6b" : val > 0 ? "#c770f0" : "#2a2a3e",
+                          padding: "6px 10px",
+                          background: isBacktrack ? "#51cf66" : isCurrent ? "#ff6b6b" : val > 0 ? "rgba(199, 112, 240, 0.3)" : "#2a2a3e",
                           border: "1px solid #555",
                           color: "#fff",
                           fontWeight: val > 0 ? "bold" : "normal",
-                          minWidth: "40px",
-                          textAlign: "center"
+                          minWidth: "35px",
+                          textAlign: "center",
+                          fontSize: "14px",
+                          transition: "all 0.5s ease"
                         }}
                       >
-                        {val === Infinity ? "∞" : val}
+                        {val}
                       </td>
                     );
                   })}
@@ -483,25 +498,28 @@ export const LCSVisualization = ({ stepData }) => {
         </div>
       )}
 
-      {/* 當前比對 */}
+      {/* 當前比對狀態 */}
       {match !== undefined && i !== undefined && j !== undefined && i > 0 && j > 0 && (
-        <div style={{ marginTop: "15px", textAlign: "center", fontSize: "14px" }}>
+        <div style={{ marginTop: "15px", textAlign: "center", fontSize: "14px", padding: "8px", background: "#2a2a3e", borderRadius: "6px" }}>
           {match ? (
-            <span style={{ color: "#4ecdc4" }}>✓ {s1[i-1]} = {s2[j-1]} 匹配</span>
+            <span style={{ color: "#51cf66", fontWeight: "bold" }}>✓ {s1[i-1]} = {s2[j-1]} 匹配</span>
           ) : (
-            <span style={{ color: "#ff6b6b" }}>✗ {s1[i-1]} ≠ {s2[j-1]} 不匹配</span>
+            <span style={{ color: "#ff6b6b", fontWeight: "bold" }}>✗ {s1[i-1]} ≠ {s2[j-1]} 不匹配</span>
           )}
         </div>
       )}
 
       {/* LCS 結果 */}
       {lcs && (
-        <div style={{ marginTop: "20px", padding: "15px", background: "#2a2a3e", borderRadius: "8px", textAlign: "center" }}>
-          <div style={{ color: "#c770f0", fontSize: "14px", marginBottom: "8px" }}>
-            最長公共子序列 (LCS):
+        <div style={{ marginTop: "15px", padding: "12px", background: "rgba(81, 207, 102, 0.2)", borderRadius: "8px", textAlign: "center", border: "2px solid #51cf66" }}>
+          <div style={{ color: "#51cf66", fontSize: "14px", marginBottom: "5px" }}>
+            最長公共子序列:
           </div>
-          <div style={{ fontSize: "20px", fontWeight: "bold", color: "#4ecdc4" }}>
-            "{lcs}" (長度 {length})
+          <div style={{ fontSize: "24px", fontWeight: "bold", color: "#51cf66", letterSpacing: "2px" }}>
+            {lcs}
+          </div>
+          <div style={{ color: "#aaa", fontSize: "12px", marginTop: "5px" }}>
+            長度: {length}
           </div>
         </div>
       )}
