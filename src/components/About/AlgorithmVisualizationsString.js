@@ -79,7 +79,7 @@ export const KMPVisualization = ({ stepData }) => {
 // Rabin-Karp 視覺化
 export const RabinKarpVisualization = ({ stepData }) => {
   if (!stepData) return null;
-  const { text, pattern, window, position, textHash, patternHash, found, phase } = stepData;
+  const { text, pattern, window, position, textHash, patternHash, found } = stepData;
 
   return (
     <div className="algorithm-container">
@@ -154,7 +154,7 @@ export const RabinKarpVisualization = ({ stepData }) => {
 // Z-Algorithm 視覺化
 export const ZAlgorithmVisualization = ({ stepData }) => {
   if (!stepData) return null;
-  const { str, z, i, l, r, comparing, phase } = stepData;
+  const { str, z, i, l, r, comparing } = stepData;
 
   return (
     <div className="algorithm-container">
@@ -221,7 +221,7 @@ export const ZAlgorithmVisualization = ({ stepData }) => {
 // Manacher's Algorithm 視覺化
 export const ManacherVisualization = ({ stepData }) => {
   if (!stepData) return null;
-  const { original, transformed, p, center, right, i, maxLen, maxCenter, palindrome, phase } = stepData;
+  const { original, transformed, p, center, right, i, maxLen, maxCenter, palindrome } = stepData;
 
   return (
     <div className="algorithm-container">
@@ -310,7 +310,7 @@ export const ManacherVisualization = ({ stepData }) => {
 // Trie 視覺化
 export const TrieVisualization = ({ stepData }) => {
   if (!stepData) return null;
-  const { trie, operation, word, found, path, prefix, words, phase } = stepData;
+  const { trie, operation, word, found, path, prefix, words } = stepData;
 
   // 簡化的 Trie 樹狀顯示
   const renderTrieNode = (node, char = "root", level = 0) => {
@@ -396,7 +396,7 @@ export const TrieVisualization = ({ stepData }) => {
 // LCS 視覺化
 export const LCSVisualization = ({ stepData }) => {
   if (!stepData) return null;
-  const { s1, s2, dp, i, j, match, lcs, length, backtrack, phase } = stepData;
+  const { s1, s2, dp, i, j, match, lcs, length, backtrack } = stepData;
 
   return (
     <div className="algorithm-container">
