@@ -3,6 +3,8 @@
   background-color: #1a1a2e !important;
   border: 2px solid #c770f0 !important;
   border-radius: 15px !important;
+  max-height: 95vh !important;
+  overflow-y: auto !important;
 }
 
 .algorithm-modal-header {
@@ -18,7 +20,8 @@
 .algorithm-modal-body {
   background-color: #1a1a2e !important;
   color: white !important;
-  padding: 25px !important;
+  padding: 20px !important;
+  overflow-x: hidden !important;
 }
 
 /* 視覺化容器 */
@@ -44,32 +47,45 @@
 
 /* 視覺化區域 */
 .visualization-area {
-  min-height: 300px;
+  min-height: 250px;
+  max-height: 500px;
   background-color: rgba(255, 255, 255, 0.03);
   border-radius: 10px;
-  padding: 20px;
+  padding: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid rgba(199, 112, 240, 0.3);
+  overflow: auto;
+}
+
+.algorithm-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px;
 }
 
 /* 步驟說明 */
 .step-explanation {
   background-color: rgba(199, 112, 240, 0.15);
-  padding: 15px;
+  padding: 12px;
   border-radius: 10px;
-  min-height: 80px;
+  min-height: 70px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .step-explanation h6 {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  font-size: 1.05em;
 }
 
 .step-explanation p {
   margin: 0;
   color: #e0e0e0;
-  font-size: 1.05em;
+  font-size: 0.95em;
+  line-height: 1.5;
 }
 
 /* 控制面板 */
@@ -81,53 +97,64 @@
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 12px;
+}
+
+.control-panel button {
+  white-space: nowrap;
+  padding: 8px 16px;
+  font-size: 0.95em;
 }
 
 .speed-control {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* 複雜度資訊 */
 .complexity-info {
   display: flex;
   justify-content: space-around;
-  padding: 15px;
+  padding: 12px;
   background-color: rgba(199, 112, 240, 0.1);
   border-radius: 10px;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px;
 }
 
 .complexity-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 100px;
 }
 
 .complexity-label {
   color: #c770f0;
   font-weight: 600;
   margin-bottom: 5px;
+  font-size: 0.95em;
 }
 
 .complexity-value {
   color: white;
-  font-size: 1.2em;
+  font-size: 1.1em;
   font-family: 'Courier New', monospace;
 }
 
 /* 圖節點樣式 */
 .graph-node {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  border: 3px solid #c770f0;
+  font-size: 0.9em;
+  border: 2px solid #c770f0;
   background-color: #1a1a2e;
   color: white;
   position: absolute;
@@ -137,15 +164,15 @@
 
 .graph-node.visited {
   background-color: #c770f0;
-  box-shadow: 0 0 20px #c770f0;
-  transform: scale(1.1);
+  box-shadow: 0 0 15px #c770f0;
+  transform: scale(1.05);
 }
 
 .graph-node.current {
   background-color: #ff6b6b;
   border-color: #ff6b6b;
-  box-shadow: 0 0 25px #ff6b6b;
-  transform: scale(1.2);
+  box-shadow: 0 0 20px #ff6b6b;
+  transform: scale(1.15);
 }
 
 .graph-node.in-queue {
@@ -172,15 +199,26 @@
 /* 陣列視覺化 */
 .array-container {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   align-items: flex-end;
   flex-wrap: wrap;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.array-display {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 100%;
 }
 
 .array-element {
-  width: 50px;
-  min-height: 50px;
+  width: 45px;
+  min-height: 45px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -190,8 +228,9 @@
   border-radius: 8px;
   color: white;
   font-weight: bold;
+  font-size: 0.95em;
   transition: all 0.3s ease;
-  padding: 10px 5px;
+  padding: 5px;
 }
 
 .array-element.highlight {
@@ -219,21 +258,25 @@
   border-radius: 8px;
   border: 2px dashed #c770f0;
   min-height: 60px;
+  overflow-x: auto;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .queue-element {
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   background-color: #4ecdc4;
   border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  font-size: 0.9em;
   color: white;
   border: 2px solid #3bb8b0;
+  flex-shrink: 0;
 }
 
 /* 堆疊視覺化 */
@@ -246,33 +289,41 @@
   border-radius: 8px;
   border: 2px dashed #c770f0;
   min-height: 150px;
+  max-height: 350px;
+  overflow-y: auto;
   justify-content: flex-end;
   align-items: center;
+  width: 100%;
 }
 
 .stack-element {
-  width: 80px;
-  height: 40px;
+  width: min(80px, 90%);
+  height: 38px;
   background-color: #ff6b6b;
   border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  font-size: 0.9em;
   color: white;
   border: 2px solid #ff5252;
+  flex-shrink: 0;
 }
 
 /* 矩陣視覺化 */
 .matrix-container {
   display: grid;
-  gap: 5px;
+  gap: 4px;
   justify-content: center;
+  max-width: 100%;
+  overflow: auto;
+  padding: 5px;
 }
 
 .matrix-cell {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -280,15 +331,16 @@
   border: 1px solid #c770f0;
   border-radius: 6px;
   color: white;
-  font-size: 0.9em;
+  font-size: 0.85em;
   font-weight: bold;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .matrix-cell.highlight {
   background-color: #c770f0;
-  box-shadow: 0 0 15px #c770f0;
-  transform: scale(1.1);
+  box-shadow: 0 0 12px #c770f0;
+  transform: scale(1.05);
 }
 
 .matrix-cell.infinity {
@@ -303,20 +355,25 @@
   align-items: center;
   justify-content: center;
   min-height: 250px;
+  max-height: 450px;
+  overflow: auto;
   position: relative;
+  width: 100%;
+  padding: 10px;
 }
 
 .tree-node {
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background-color: #1a1a2e;
-  border: 3px solid #c770f0;
+  border: 2px solid #c770f0;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
   font-weight: bold;
+  font-size: 0.9em;
   position: absolute;
   transition: all 0.3s ease;
 }
@@ -324,8 +381,8 @@
 .tree-node.current {
   background-color: #ff6b6b;
   border-color: #ff6b6b;
-  box-shadow: 0 0 20px #ff6b6b;
-  transform: scale(1.2);
+  box-shadow: 0 0 15px #ff6b6b;
+  transform: scale(1.15);
 }
 
 .tree-node.visited {
@@ -370,24 +427,92 @@
 
   .control-panel {
     flex-direction: column;
+    gap: 10px;
   }
 
   .array-element {
-    width: 40px;
-    min-height: 40px;
-    font-size: 0.9em;
+    width: 38px;
+    min-height: 38px;
+    font-size: 0.85em;
   }
 
   .graph-node {
-    width: 35px;
-    height: 35px;
-    font-size: 0.9em;
+    width: 32px;
+    height: 32px;
+    font-size: 0.85em;
   }
 
   .matrix-cell {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     font-size: 0.8em;
+  }
+
+  .queue-element {
+    width: 38px;
+    height: 38px;
+    font-size: 0.85em;
+  }
+
+  .stack-element {
+    width: min(70px, 90%);
+    height: 35px;
+    font-size: 0.85em;
+  }
+
+  .tree-level {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .algorithm-modal-body {
+    padding: 10px !important;
+  }
+
+  .visualization-area {
+    min-height: 200px;
+    padding: 10px;
+  }
+
+  .array-element {
+    width: 35px;
+    min-height: 35px;
+    font-size: 0.8em;
+  }
+
+  .graph-node {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75em;
+  }
+
+  .matrix-cell {
+    width: 35px;
+    height: 35px;
+    font-size: 0.75em;
+  }
+
+  .queue-element {
+    width: 35px;
+    height: 35px;
+    font-size: 0.8em;
+  }
+
+  .stack-element {
+    width: min(65px, 90%);
+    height: 32px;
+    font-size: 0.8em;
+  }
+
+  .step-info {
+    font-size: 0.85em;
+    padding: 8px;
+  }
+
+  .control-panel button {
+    padding: 6px 12px;
+    font-size: 0.85em;
   }
 }
 
@@ -422,7 +547,9 @@
 
 /* 字串顯示容器 */
 .string-container {
-  margin: 20px 0;
+  margin: 15px 0;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .string-display {
@@ -430,21 +557,24 @@
   gap: 5px;
   justify-content: center;
   flex-wrap: wrap;
+  min-width: max-content;
+  padding: 5px;
 }
 
 .string-char {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #555;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   color: #fff;
   background: #2a2a3e;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .string-char:hover {
@@ -454,43 +584,51 @@
 
 /* DP 表格樣式 */
 .dp-table-container {
-  margin-top: 20px;
+  margin-top: 15px;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 400px;
   padding: 10px;
   background: #1a1a2e;
   border-radius: 8px;
+  width: 100%;
 }
 
 .dp-table {
   border-collapse: collapse;
   margin: 0 auto;
+  min-width: max-content;
 }
 
 .dp-table td {
-  padding: 8px 12px;
+  padding: 6px 10px;
   text-align: center;
   border: 1px solid #555;
-  min-width: 40px;
+  min-width: 38px;
+  font-size: 13px;
   transition: background 0.3s ease;
 }
 
 /* Trie 樹樣式 */
 .trie-container {
-  padding: 20px;
+  padding: 15px;
   background: #1a1a2e;
   border-radius: 8px;
   overflow-x: auto;
-  min-height: 200px;
+  overflow-y: auto;
+  max-height: 400px;
+  min-height: 180px;
+  width: 100%;
 }
 
 .tree-node {
   display: inline-block;
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: #c770f0;
   border-radius: 50%;
-  min-width: 40px;
+  min-width: 38px;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   color: #fff;
   transition: all 0.3s ease;
@@ -610,25 +748,75 @@
 /* 響應式調整 - 字串演算法 */
 @media (max-width: 768px) {
   .string-char {
-    width: 35px;
-    height: 35px;
-    font-size: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .dp-table-container {
+    padding: 8px;
+    max-height: 300px;
   }
 
   .dp-table td {
-    padding: 6px 8px;
-    font-size: 12px;
-    min-width: 35px;
+    padding: 5px 6px;
+    font-size: 11px;
+    min-width: 32px;
   }
 
   .tree-node {
-    padding: 6px 10px;
-    font-size: 12px;
-    min-width: 35px;
+    padding: 5px 8px;
+    font-size: 11px;
+    min-width: 32px;
+  }
+
+  .trie-container {
+    padding: 10px;
+    max-height: 300px;
   }
 
   .info-box {
-    min-width: 100px;
-    font-size: 12px;
+    min-width: 90px;
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+
+  .string-display {
+    gap: 3px;
+  }
+
+  .hash-display {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hash-value {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .string-char {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  .dp-table td {
+    padding: 4px;
+    font-size: 10px;
+    min-width: 28px;
+  }
+
+  .tree-node {
+    padding: 4px 6px;
+    font-size: 10px;
+    min-width: 28px;
+  }
+
+  .info-box {
+    min-width: 80px;
+    font-size: 10px;
+    padding: 6px 10px;
   }
 }

@@ -61,10 +61,26 @@ import {
 const AlgorithmVisualizer = ({ algorithm, show, onHide }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [speed, setSpeed] = useState(1000); // milliseconds
+  const [speed, setSpeed] = useState(2000); // milliseconds - 每2秒播放一個動畫
   const animationRef = useRef(null);
 
   const algorithmData = getAlgorithmData(algorithm);
+
+  // 當 Modal 打開時自動重置動畫
+  useEffect(() => {
+    if (show) {
+      setIsPlaying(false);
+      setCurrentStep(0);
+    }
+  }, [show, algorithm]);
+
+  // 當 Modal 打開時自動重置動畫
+  useEffect(() => {
+    if (show) {
+      setIsPlaying(false);
+      setCurrentStep(0);
+    }
+  }, [show, algorithm]);
 
   useEffect(() => {
     if (isPlaying && currentStep < algorithmData.steps.length) {
@@ -144,23 +160,23 @@ const AlgorithmVisualizer = ({ algorithm, show, onHide }) => {
               <span style={{ color: "#c770f0", marginRight: "10px" }}>速度:</span>
               <ButtonGroup>
                 <Button
+                  variant={speed === 3000 ? "primary" : "outline-light"}
+                  size="sm"
+                  onClick={() => handleSpeedChange(3000)}
+                >
+                  慢
+                </Button>
+                <Button
                   variant={speed === 2000 ? "primary" : "outline-light"}
                   size="sm"
                   onClick={() => handleSpeedChange(2000)}
                 >
-                  慢
+                  中
                 </Button>
                 <Button
                   variant={speed === 1000 ? "primary" : "outline-light"}
                   size="sm"
                   onClick={() => handleSpeedChange(1000)}
-                >
-                  中
-                </Button>
-                <Button
-                  variant={speed === 500 ? "primary" : "outline-light"}
-                  size="sm"
-                  onClick={() => handleSpeedChange(500)}
                 >
                   快
                 </Button>
