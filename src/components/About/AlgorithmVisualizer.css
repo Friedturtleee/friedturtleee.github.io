@@ -165,14 +165,12 @@
 .graph-node.visited {
   background-color: #c770f0;
   box-shadow: 0 0 15px #c770f0;
-  transform: scale(1.05);
 }
 
 .graph-node.current {
   background-color: #ff6b6b;
   border-color: #ff6b6b;
   box-shadow: 0 0 20px #ff6b6b;
-  transform: scale(1.15);
 }
 
 .graph-node.in-queue {

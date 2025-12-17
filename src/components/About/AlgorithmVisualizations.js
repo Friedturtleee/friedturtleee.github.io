@@ -75,8 +75,9 @@ export const BFSVisualization = ({ stepData }) => {
               key={`node-${i}`}
               style={{
                 position: "absolute",
-                left: `${pos.x - 18}px`,
-                top: `${pos.y - 18}px`,
+                left: `${pos.x}px`,
+                top: `${pos.y}px`,
+                transform: "translate(-50%, -50%)",
                 width: "36px",
                 height: "36px",
                 borderRadius: "50%",
@@ -215,8 +216,9 @@ export const DFSVisualization = ({ stepData }) => {
               key={`node-${i}`}
               style={{
                 position: "absolute",
-                left: `${pos.x - 18}px`,
-                top: `${pos.y - 18}px`,
+                left: `${pos.x}px`,
+                top: `${pos.y}px`,
+                transform: "translate(-50%, -50%)",
                 width: "36px",
                 height: "36px",
                 borderRadius: "50%",
@@ -574,7 +576,7 @@ export const BipartiteVisualization = ({ stepData }) => {
               top: `${pos.y}px`,
               backgroundColor: bgColor,
               borderColor: borderColor,
-              transform: isCurrent ? "scale(1.3)" : "scale(1)"
+              transform: isCurrent ? "translate(-50%, -50%) scale(1.3)" : "translate(-50%, -50%) scale(1)"
             }}
           >
             {idx}
