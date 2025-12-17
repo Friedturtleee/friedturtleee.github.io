@@ -407,13 +407,20 @@ function Blog() {
                                 gap: "5px",
                                 transition: "all 0.3s ease",
                                 backgroundColor: "#6c757d",
-                                border: "none"
+                                border: "none",
+                                maxWidth: "300px"
                               }}
                               onClick={() => handleDownloadAttachment(file, blog.id)}
                             >
-                              <MdFileDownload size={16} />
-                              {file.name}
-                              {file.size && ` (${(file.size / 1024 / 1024).toFixed(2)} MB)`}
+                              <MdFileDownload size={16} style={{ flexShrink: 0 }} />
+                              <span style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap"
+                              }}>
+                                {file.name}
+                              </span>
+                              {file.size && <span style={{ flexShrink: 0 }}>{` (${(file.size / 1024 / 1024).toFixed(2)} MB)`}</span>}
                             </Badge>
                           ))}
                         </div>
@@ -499,11 +506,20 @@ function Blog() {
                       <Badge
                         key={index}
                         bg="secondary"
-                        style={{ margin: "5px", padding: "8px 12px", fontSize: "0.9em", display: "inline-flex", alignItems: "center", gap: "8px" }}
+                        style={{ margin: "5px", padding: "8px 12px", fontSize: "0.9em", display: "inline-flex", alignItems: "center", gap: "8px", maxWidth: "300px" }}
                       >
-                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                        <span style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          flex: "1",
+                          minWidth: 0
+                        }}>
+                          {file.name}
+                        </span>
+                        <span style={{ flexShrink: 0 }}>({(file.size / 1024).toFixed(1)} KB)</span>
                         <span
-                          style={{ cursor: "pointer", marginLeft: "5px" }}
+                          style={{ cursor: "pointer", marginLeft: "5px", flexShrink: 0 }}
                           onClick={() => removeAttachment(index)}
                         >
                           ✕

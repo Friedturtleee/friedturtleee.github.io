@@ -36,7 +36,13 @@ function ResumeNew() {
                 target="_blank"
                 rel="noreferrer"
                 className="purple"
-                style={{ fontSize: "1.2em" }}
+                style={{ 
+                  fontSize: "1.2em",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  position: "relative",
+                  zIndex: 10
+                }}
               >
                 github.com/soumyajit4419/Portfolio
               </a>
