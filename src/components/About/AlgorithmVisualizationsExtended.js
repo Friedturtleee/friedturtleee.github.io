@@ -339,51 +339,6 @@ export const TwoPointersVisualization = ({ stepData }) => {
         </div>
       )}
     </div>
-              }}
-            >
-              <div style={{ fontSize: "0.8em", color: "#aaa" }}>[{idx}]</div>
-              <div style={{ fontSize: "1.3em", fontWeight: "bold" }}>{value}</div>
-              {isLeft && (
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "-25px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    color: "#4ecdc4",
-                    fontSize: "0.9em",
-                    fontWeight: "bold"
-                  }}
-                >
-                  ↑ Left
-                </div>
-              )}
-              {isRight && (
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "-25px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    color: "#ff6b6b",
-                    fontSize: "0.9em",
-                    fontWeight: "bold"
-                  }}
-                >
-                  ↑ Right
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {found && (
-        <div style={{ marginTop: "40px", textAlign: "center", color: "#51cf66", fontSize: "1.3em", fontWeight: "bold" }}>
-          ✓ 找到答案！({array[left]}, {array[right]})
-        </div>
-      )}
-    </div>
   );
 };
 
