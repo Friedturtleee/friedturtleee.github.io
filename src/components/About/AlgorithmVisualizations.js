@@ -480,7 +480,6 @@ export const BellmanFordVisualization = ({ stepData }) => {
           {/* 繪製節點 */}
           {Array.from({ length: nodes }, (_, i) => {
             const pos = getNodePosition(i);
-            const dist = distances[i];
             const isSource = i === 0;
             
             return (
