@@ -857,10 +857,10 @@ export const DSUVisualization = ({ stepData }) => {
           {rank[idx] > 0 && (
             <text
               x={pos.x}
-              y={pos.y + 28}
+              y={pos.y + 23}
               textAnchor="middle"
               fill="#f9ca24"
-              fontSize="10"
+              fontSize="9"
             >
               r:{rank[idx]}
             </text>
@@ -967,7 +967,7 @@ export const BipartiteVisualization = ({ stepData }) => {
                 <circle
                   cx={pos.x}
                   cy={pos.y}
-                  r={isCurrent ? 24 : 18}
+                  r={isCurrent ? 20 : 18}
                   fill={fillColor}
                   stroke={strokeColor}
                   strokeWidth="2"

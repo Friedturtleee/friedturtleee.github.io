@@ -20,22 +20,22 @@ export const DPVisualization = ({ stepData }) => {
           <svg width="300" height="120" viewBox="0 0 300 120">
             {/* F(i-2) */}
             <g>
-              <circle cx="50" cy="60" r="25" fill="#4ecdc4" stroke="#4ecdc4" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
-              <text x="50" y="50" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">F({calculating-2})</text>
-              <text x="50" y="68" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">{dp[calculating-2] || 0}</text>
+              <circle cx="50" cy="60" r="18" fill="#4ecdc4" stroke="#4ecdc4" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
+              <text x="50" y="56" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">F({calculating-2})</text>
+              <text x="50" y="67" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">{dp[calculating-2] || 0}</text>
             </g>
             
             {/* F(i-1) */}
             <g>
-              <circle cx="150" cy="60" r="25" fill="#f9ca24" stroke="#f9ca24" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
-              <text x="150" y="50" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">F({calculating-1})</text>
-              <text x="150" y="68" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">{dp[calculating-1] || 0}</text>
+              <circle cx="150" cy="60" r="18" fill="#f9ca24" stroke="#f9ca24" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
+              <text x="150" y="56" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">F({calculating-1})</text>
+              <text x="150" y="67" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">{dp[calculating-1] || 0}</text>
             </g>
             
             {/* F(i) */}
             <g>
-              <circle cx="250" cy="60" r="28" fill="#ff6b6b" stroke="#ff6b6b" strokeWidth="2" style={{ filter: "drop-shadow(0 0 8px #ff6b6b)", transition: "all 0.5s ease" }} />
-              <text x="250" y="50" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">F({calculating})</text>
+              <circle cx="250" cy="60" r="20" fill="#ff6b6b" stroke="#ff6b6b" strokeWidth="2" style={{ filter: "drop-shadow(0 0 8px #ff6b6b)", transition: "all 0.5s ease" }} />
+              <text x="250" y="55" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">F({calculating})</text>
               <text x="250" y="68" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">{dp[calculating] || "?"}</text>
             </g>
             
@@ -233,9 +233,9 @@ export const TwoPointersVisualization = ({ stepData }) => {
           <svg width="100%" height="100" viewBox="0 0 400 100">
             {/* Left pointer */}
             <g>
-              <circle cx="100" cy="40" r="22" fill="#4ecdc4" stroke="#4ecdc4" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
-              <text x="100" y="36" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">Left</text>
-              <text x="100" y="48" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">{array[left]}</text>
+              <circle cx="100" cy="40" r="18" fill="#4ecdc4" stroke="#4ecdc4" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
+              <text x="100" y="36" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold">Left</text>
+              <text x="100" y="47" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">{array[left]}</text>
               <path d="M 100 65 L 100 85" stroke="#4ecdc4" strokeWidth="2" markerEnd="url(#arrow-left)" />
             </g>
             
@@ -244,9 +244,9 @@ export const TwoPointersVisualization = ({ stepData }) => {
             
             {/* Right pointer */}
             <g>
-              <circle cx="300" cy="40" r="22" fill="#ff6b6b" stroke="#ff6b6b" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
-              <text x="300" y="36" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">Right</text>
-              <text x="300" y="48" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">{array[right]}</text>
+              <circle cx="300" cy="40" r="18" fill="#ff6b6b" stroke="#ff6b6b" strokeWidth="2" style={{ transition: "all 0.5s ease" }} />
+              <text x="300" y="36" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold">Right</text>
+              <text x="300" y="47" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">{array[right]}</text>
               <path d="M 300 65 L 300 85" stroke="#ff6b6b" strokeWidth="2" markerEnd="url(#arrow-right)" />
             </g>
             
@@ -487,7 +487,7 @@ export const SegmentTreeVisualization = ({ stepData }) => {
           <circle
             cx={x}
             cy={y}
-            r="20"
+            r="18"
             fill={isUpdated ? "#ff6b6b" : isHighlight ? "#51cf66" : "#1a1a2e"}
             stroke={isUpdated ? "#ff6b6b" : isHighlight ? "#51cf66" : "#4ecdc4"}
             strokeWidth="2"
@@ -501,17 +501,17 @@ export const SegmentTreeVisualization = ({ stepData }) => {
             y={y + 5}
             textAnchor="middle"
             fill="white"
-            fontSize="14"
+            fontSize="13"
             fontWeight="bold"
           >
             {tree[index]}
           </text>
           <text
             x={x}
-            y={y + 35}
+            y={y + 28}
             textAnchor="middle"
             fill="#888"
-            fontSize="10"
+            fontSize="9"
           >
             [{index}]
           </text>
@@ -766,10 +766,10 @@ export const SubtreeSizeVisualization = ({ stepData }) => {
         {node.size !== undefined && node.size > 0 && (
           <text
             x={x}
-            y={y + 28}
+            y={y + 23}
             textAnchor="middle"
             fill="#51cf66"
-            fontSize="10"
+            fontSize="9"
           >
             ({node.size})
           </text>
@@ -827,7 +827,7 @@ export const MeetInMiddleVisualization = ({ stepData }) => {
           {leftHalf.length > 0 && rightHalf.length > 0 && (
             <g>
               <line x1="185" y1="45" x2="265" y2="45" stroke="#51cf66" strokeWidth="2" />
-              <circle cx="225" cy="45" r="15" fill="#51cf66" stroke="#51cf66" strokeWidth="2" />
+              <circle cx="225" cy="45" r="18" fill="#51cf66" stroke="#51cf66" strokeWidth="2" />
               <text x="225" y="50" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">✓</text>
               <text x="225" y="110" textAnchor="middle" fill="#51cf66" fontSize="10" fontWeight="bold">匹配中...</text>
             </g>
@@ -988,7 +988,7 @@ export const BITVisualization = ({ stepData }) => {
             <circle
               cx={x}
               cy={y}
-              r="22"
+              r="18"
               fill="#4ecdc4"
               stroke="#4ecdc4"
               strokeWidth="2"
