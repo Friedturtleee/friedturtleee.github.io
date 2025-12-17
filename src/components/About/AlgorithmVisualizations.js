@@ -792,13 +792,110 @@ export const DSUVisualization = ({ stepData }) => {
   if (!stepData) return null;
 
   const { parent, rank, operation } = stepData;
+  
+  // 繪製 DSU 樹狀結構
+  const renderDSUGraph = () => {
+    const n = parent.length;
+    const elements = [];
+    
+    // 計算每個節點的位置（圓形排列）
+    const getNodePosition = (index) => {
+      const angle = (index / n) * 2 * Math.PI - Math.PI / 2;
+      const radius = 80;
+      return {
+        x: 150 + radius * Math.cos(angle),
+        y: 110 + radius * Math.sin(angle)
+      };
+    };
+    
+    // 繪製邊（從子節點指向父節點）
+    parent.forEach((p, idx) => {
+      if (p !== idx) {
+        const from = getNodePosition(idx);
+        const to = getNodePosition(p);
+        elements.push(
+          <line
+            key={`edge-${idx}-${p}`}
+            x1={from.x}
+            y1={from.y}
+            x2={to.x}
+            y2={to.y}
+            stroke="#c770f0"
+            strokeWidth="2"
+            markerEnd="url(#arrow-dsu)"
+            style={{ transition: "all 0.5s ease" }}
+          />
+        );
+      }
+    });
+    
+    // 繪製節點
+    parent.forEach((p, idx) => {
+      const pos = getNodePosition(idx);
+      const isRoot = p === idx;
+      elements.push(
+        <g key={`node-${idx}`}>
+          <circle
+            cx={pos.x}
+            cy={pos.y}
+            r="18"
+            fill={isRoot ? "#51cf66" : "#1a1a2e"}
+            stroke={isRoot ? "#51cf66" : "#c770f0"}
+            strokeWidth="2"
+            style={{ transition: "all 0.5s ease" }}
+          />
+          <text
+            x={pos.x}
+            y={pos.y + 5}
+            textAnchor="middle"
+            fill="white"
+            fontSize="13"
+            fontWeight="bold"
+          >
+            {idx}
+          </text>
+          {rank[idx] > 0 && (
+            <text
+              x={pos.x}
+              y={pos.y + 28}
+              textAnchor="middle"
+              fill="#f9ca24"
+              fontSize="10"
+            >
+              r:{rank[idx]}
+            </text>
+          )}
+        </g>
+      );
+    });
+    
+    return elements;
+  };
 
   return (
-    <div style={{ width: "100%", maxWidth: "600px" }}>
-      <div style={{ marginBottom: "20px", textAlign: "center" }}>
+    <div style={{ width: "100%", maxWidth: "500px" }}>
+      <div style={{ marginBottom: "15px", textAlign: "center" }}>
         <span style={{ color: "#c770f0", fontSize: "1.1em" }}>
           操作: {operation}
         </span>
+      </div>
+      
+      {/* DSU 圖形視覺化 */}
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "10px", textAlign: "center", color: "#c770f0", fontSize: "0.95em" }}>
+          並查集結構（線指向父節點）
+        </div>
+        <svg width="100%" height="240" viewBox="0 0 300 240" style={{ display: "block" }}>
+          <defs>
+            <marker id="arrow-dsu" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="#c770f0" />
+            </marker>
+          </defs>
+          {renderDSUGraph()}
+        </svg>
+        <div style={{ textAlign: "center", color: "#aaa", fontSize: "0.85em" }}>
+          綠色為根節點，r 表示 rank
+        </div>
       </div>
 
       <div style={{ marginBottom: "15px", textAlign: "center", color: "#c770f0" }}>
@@ -836,18 +933,18 @@ export const BipartiteVisualization = ({ stepData }) => {
 
   const getNodePosition = (index) => {
     const angle = (index / colors.length) * 2 * Math.PI - Math.PI / 2;
-    const radius = 100;
+    const radius = 70;
     return {
-      x: 250 + radius * Math.cos(angle),
-      y: 150 + radius * Math.sin(angle)
+      x: 200 + radius * Math.cos(angle),
+      y: 100 + radius * Math.sin(angle)
     };
   };
 
   return (
     <div style={{ width: "100%", maxWidth: "500px", position: "relative" }}>
-      <div style={{ position: "relative", width: "100%", paddingTop: "60%" }}>
-        <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }} viewBox="0 0 500 300">
-          <text x="250" y="25" textAnchor="middle" fill={isBipartite ? "#51cf66" : "#ff6b6b"} fontSize="16" fontWeight="bold">
+      <div style={{ position: "relative", width: "100%", paddingTop: "50%" }}>
+        <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }} viewBox="0 0 400 200">
+          <text x="200" y="20" textAnchor="middle" fill={isBipartite ? "#51cf66" : "#ff6b6b"} fontSize="14" fontWeight="bold">
             {isBipartite ? "✓ 是二分圖" : "✗ 不是二分圖"}
           </text>
 
