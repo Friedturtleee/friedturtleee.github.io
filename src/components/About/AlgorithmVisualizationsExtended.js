@@ -329,40 +329,120 @@ export const TreeDepthVisualization = ({ stepData }) => {
 
   const { current, depth, maxDepth } = stepData;
 
+  // 生成簡單的二元樹結構
+  const renderTreeStructure = () => {
+    const levels = [
+      [{ val: 1, x: 150 }],
+      [{ val: 2, x: 100 }, { val: 3, x: 200 }],
+      [{ val: 4, x: 70 }, { val: 5, x: 130 }, null, null]
+    ];
+
+    const elements = [];
+    const verticalSpacing = 60;
+
+    // 繪製連線
+    levels.forEach((level, levelIndex) => {
+      if (levelIndex === levels.length - 1) return;
+      level.forEach((node, nodeIndex) => {
+        if (!node) return;
+        const leftChildIndex = nodeIndex * 2;
+        const rightChildIndex = nodeIndex * 2 + 1;
+        const nextLevel = levels[levelIndex + 1];
+        
+        if (nextLevel[leftChildIndex]) {
+          elements.push(
+            <line
+              key={`edge-${node.val}-left`}
+              x1={node.x}
+              y1={30 + levelIndex * verticalSpacing}
+              x2={nextLevel[leftChildIndex].x}
+              y2={30 + (levelIndex + 1) * verticalSpacing}
+              stroke="rgba(199, 112, 240, 0.6)"
+              strokeWidth="2"
+            />
+          );
+        }
+        
+        if (nextLevel[rightChildIndex]) {
+          elements.push(
+            <line
+              key={`edge-${node.val}-right`}
+              x1={node.x}
+              y1={30 + levelIndex * verticalSpacing}
+              x2={nextLevel[rightChildIndex].x}
+              y2={30 + (levelIndex + 1) * verticalSpacing}
+              stroke="rgba(199, 112, 240, 0.6)"
+              strokeWidth="2"
+            />
+          );
+        }
+      });
+    });
+
+    // 繪製節點
+    levels.forEach((level, levelIndex) => {
+      level.forEach((node) => {
+        if (!node) return;
+        const isCurrent = current === node.val;
+        const nodeDepth = levelIndex;
+        const isInCurrentDepth = nodeDepth === depth;
+        
+        elements.push(
+          <g key={`node-${node.val}`}>
+            <circle
+              cx={node.x}
+              cy={30 + levelIndex * verticalSpacing}
+              r="18"
+              fill={isCurrent ? "#ff6b6b" : isInCurrentDepth ? "#c770f0" : "#1a1a2e"}
+              stroke={isCurrent ? "#ff6b6b" : isInCurrentDepth ? "#c770f0" : "#555"}
+              strokeWidth="2"
+              style={{
+                filter: isCurrent ? "drop-shadow(0 0 8px #ff6b6b)" : "none",
+                transition: "all 0.3s ease"
+              }}
+            />
+            <text
+              x={node.x}
+              y={35 + levelIndex * verticalSpacing}
+              textAnchor="middle"
+              fill="white"
+              fontSize="13"
+              fontWeight="bold"
+            >
+              {node.val}
+            </text>
+          </g>
+        );
+      });
+    });
+
+    return elements;
+  };
+
   return (
     <div style={{ width: "100%", maxWidth: "500px" }}>
-      <div style={{ marginBottom: "20px", textAlign: "center" }}>
-        <span style={{ color: "#c770f0", fontSize: "1.2em", marginRight: "20px" }}>
+      <div style={{ marginBottom: "20px", textAlign: "center", display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+        <span style={{ color: "#c770f0", fontSize: "1.1em" }}>
           當前深度: {depth}
         </span>
-        <span style={{ color: "#51cf66", fontSize: "1.2em" }}>
+        <span style={{ color: "#51cf66", fontSize: "1.1em" }}>
           最大深度: {maxDepth}
         </span>
-      </div>
-
-      <div style={{ textAlign: "center", marginTop: "30px" }}>
-        <div style={{ color: "#aaa", marginBottom: "15px" }}>樹結構</div>
-        <pre style={{ 
-          color: "#c770f0", 
-          fontSize: "1.1em", 
-          backgroundColor: "rgba(199, 112, 240, 0.1)",
-          padding: "20px",
-          borderRadius: "10px",
-          border: "1px solid #c770f0",
-          fontFamily: "monospace"
-        }}>
-{`      1
-     / \\
-    2   3
-   / \\
-  4   5`}
-        </pre>
         {current !== null && (
-          <div style={{ marginTop: "15px", color: "#ff6b6b", fontSize: "1.1em" }}>
-            當前訪問節點: {current}
-          </div>
+          <span style={{ color: "#ff6b6b", fontSize: "1.1em" }}>
+            訪問: {current}
+          </span>
         )}
       </div>
+
+      <svg
+        width="100%"
+        height="230"
+        viewBox="0 0 300 230"
+        style={{ display: "block", margin: "0 auto" }}
+      >
+        {renderTreeStructure()}
+      </svg>
     </div>
   );
 };
@@ -373,73 +453,103 @@ export const SubtreeSizeVisualization = ({ stepData }) => {
 
   const { tree, current } = stepData;
 
-  const renderTree = (node, x = 250, y = 40, level = 0) => {
+  const renderTree = (node, x = 50, y = 5, level = 0) => {
     if (!node) return null;
 
-    const offset = 80 / (level + 1);
+    const horizontalSpacing = Math.max(25, 80 / (level + 1.5));
+    const verticalSpacing = 60;
     const elements = [];
 
-    // 繪製當前節點
-    elements.push(
-      <div
-        key={`node-${node.val}-${x}-${y}`}
-        className={`tree-node ${current === node.val ? "current" : ""}`}
-        style={{ left: `${x}px`, top: `${y}px` }}
-      >
-        <div>{node.val}</div>
-        {node.size !== undefined && node.size > 0 && (
-          <div style={{ fontSize: "0.7em", color: "#51cf66", marginTop: "2px" }}>
-            ({node.size})
-          </div>
-        )}
-      </div>
-    );
-
-    // 繪製左子樹
+    // 繪製左子樹連線
     if (node.left) {
-      const leftX = x - offset;
-      const leftY = y + 70;
+      const leftX = x - horizontalSpacing;
+      const leftY = y + verticalSpacing;
       elements.push(
-        <div
+        <line
           key={`edge-${node.val}-left`}
-          className="tree-edge"
-          style={{
-            left: `${x}px`,
-            top: `${y + 20}px`,
-            width: `${Math.sqrt((leftX - x) ** 2 + (leftY - y - 20) ** 2)}px`,
-            transform: `rotate(${Math.atan2(leftY - y - 20, leftX - x) * (180 / Math.PI)}deg)`
-          }}
+          x1={x}
+          y1={y}
+          x2={leftX}
+          y2={leftY}
+          stroke="rgba(199, 112, 240, 0.6)"
+          strokeWidth="2"
         />
       );
       elements.push(...renderTree(node.left, leftX, leftY, level + 1));
     }
 
-    // 繪製右子樹
+    // 繪製右子樹連線
     if (node.right) {
-      const rightX = x + offset;
-      const rightY = y + 70;
+      const rightX = x + horizontalSpacing;
+      const rightY = y + verticalSpacing;
       elements.push(
-        <div
+        <line
           key={`edge-${node.val}-right`}
-          className="tree-edge"
-          style={{
-            left: `${x}px`,
-            top: `${y + 20}px`,
-            width: `${Math.sqrt((rightX - x) ** 2 + (rightY - y - 20) ** 2)}px`,
-            transform: `rotate(${Math.atan2(rightY - y - 20, rightX - x) * (180 / Math.PI)}deg)`
-          }}
+          x1={x}
+          y1={y}
+          x2={rightX}
+          y2={rightY}
+          stroke="rgba(199, 112, 240, 0.6)"
+          strokeWidth="2"
         />
       );
       elements.push(...renderTree(node.right, rightX, rightY, level + 1));
     }
 
+    // 繪製當前節點
+    const isCurrent = current === node.val;
+    elements.push(
+      <g key={`node-${node.val}-${x}-${y}`}>
+        <circle
+          cx={x}
+          cy={y}
+          r="18"
+          fill={isCurrent ? "#ff6b6b" : "#1a1a2e"}
+          stroke={isCurrent ? "#ff6b6b" : "#c770f0"}
+          strokeWidth="2"
+          style={{
+            filter: isCurrent ? "drop-shadow(0 0 8px #ff6b6b)" : "none",
+            transition: "all 0.3s ease"
+          }}
+        />
+        <text
+          x={x}
+          y={y + 5}
+          textAnchor="middle"
+          fill="white"
+          fontSize="13"
+          fontWeight="bold"
+        >
+          {node.val}
+        </text>
+        {node.size !== undefined && node.size > 0 && (
+          <text
+            x={x}
+            y={y + 28}
+            textAnchor="middle"
+            fill="#51cf66"
+            fontSize="10"
+          >
+            ({node.size})
+          </text>
+        )}
+      </g>
+    );
+
     return elements;
   };
 
   return (
-    <div style={{ position: "relative", width: "500px", height: "280px" }}>
-      {renderTree(tree)}
-      <div style={{ position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)", textAlign: "center", color: "#51cf66" }}>
+    <div style={{ width: "100%", maxWidth: "600px", overflow: "auto" }}>
+      <svg
+        width="100%"
+        height="300"
+        viewBox="0 0 300 300"
+        style={{ display: "block", margin: "0 auto" }}
+      >
+        {renderTree(tree, 150, 30)}
+      </svg>
+      <div style={{ textAlign: "center", color: "#51cf66", marginTop: "10px", fontSize: "0.9em" }}>
         括號內數字為子樹大小
       </div>
     </div>

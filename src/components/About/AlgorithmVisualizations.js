@@ -12,77 +12,127 @@ export const BFSVisualization = ({ stepData }) => {
   // 節點位置（圓形排列）
   const getNodePosition = (index) => {
     const angle = (index / nodes) * 2 * Math.PI - Math.PI / 2;
-    const radius = 100;
+    const radius = 80;
     return {
-      x: 200 + radius * Math.cos(angle),
-      y: 150 + radius * Math.sin(angle)
+      x: 150 + radius * Math.cos(angle),
+      y: 100 + radius * Math.sin(angle)
     };
   };
 
   return (
-    <div style={{ position: "relative", width: "400px", height: "300px" }}>
-      {/* 繪製邊 */}
-      {graph.map((neighbors, u) =>
-        neighbors.map((v, idx) => {
-          if (u < v) { // 避免重複繪製
-            const posU = getNodePosition(u);
-            const posV = getNodePosition(v);
-            const dx = posV.x - posU.x;
-            const dy = posV.y - posU.y;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    <div style={{ width: "100%", maxWidth: "500px", display: "flex", flexDirection: "column", gap: "15px" }}>
+      {/* 圖形顯示區域 */}
+      <div style={{ position: "relative", width: "100%", height: "230px", marginBottom: "10px" }}>
+        {/* 繪製邊 */}
+        <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+          {graph.map((neighbors, u) =>
+            neighbors.map((v, idx) => {
+              if (u < v) { // 避免重複繪製
+                const posU = getNodePosition(u);
+                const posV = getNodePosition(v);
+                return (
+                  <line
+                    key={`edge-${u}-${v}-${idx}`}
+                    x1={posU.x}
+                    y1={posU.y}
+                    x2={posV.x}
+                    y2={posV.y}
+                    stroke="rgba(199, 112, 240, 0.5)"
+                    strokeWidth="2"
+                  />
+                );
+              }
+              return null;
+            })
+          )}
+        </svg>
 
-            return (
-              <div
-                key={`edge-${u}-${v}-${idx}`}
-                className="graph-edge"
-                style={{
-                  left: `${posU.x}px`,
-                  top: `${posU.y}px`,
-                  width: `${length}px`,
-                  transform: `rotate(${angle}deg)`
-                }}
-              />
-            );
+        {/* 繪製節點 */}
+        {Array.from({ length: nodes }, (_, i) => {
+          const pos = getNodePosition(i);
+          const isVisited = visited.includes(i);
+          const isCurrent = current === i;
+          const inQueue = queue.includes(i);
+
+          let bgColor = "#1a1a2e";
+          let borderColor = "#c770f0";
+          let shadow = "none";
+
+          if (isCurrent) {
+            bgColor = "#ff6b6b";
+            borderColor = "#ff6b6b";
+            shadow = "0 0 15px #ff6b6b";
+          } else if (isVisited) {
+            bgColor = "#c770f0";
+            borderColor = "#c770f0";
+          } else if (inQueue) {
+            bgColor = "#4ecdc4";
+            borderColor = "#4ecdc4";
           }
-          return null;
-        })
-      )}
 
-      {/* 繪製節點 */}
-      {Array.from({ length: nodes }, (_, i) => {
-        const pos = getNodePosition(i);
-        const isVisited = visited.includes(i);
-        const isCurrent = current === i;
-        const inQueue = queue.includes(i);
-
-        let className = "graph-node";
-        if (isCurrent) className += " current";
-        else if (isVisited) className += " visited";
-        else if (inQueue) className += " in-queue";
-
-        return (
-          <div
-            key={`node-${i}`}
-            className={className}
-            style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
-          >
-            {i}
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={`node-${i}`}
+              style={{
+                position: "absolute",
+                left: `${pos.x - 18}px`,
+                top: `${pos.y - 18}px`,
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                backgroundColor: bgColor,
+                border: `2px solid ${borderColor}`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "0.9em",
+                boxShadow: shadow,
+                transition: "all 0.3s ease",
+                zIndex: 2
+              }}
+            >
+              {i}
+            </div>
+          );
+        })}
+      </div>
 
       {/* 佇列顯示 */}
-      <div style={{ position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)", width: "90%" }}>
-        <div style={{ textAlign: "center", color: "#c770f0", marginBottom: "5px", fontSize: "0.9em" }}>
+      <div style={{ width: "100%", padding: "10px", backgroundColor: "rgba(199, 112, 240, 0.1)", borderRadius: "8px" }}>
+        <div style={{ textAlign: "center", color: "#c770f0", marginBottom: "8px", fontSize: "0.9em", fontWeight: "bold" }}>
           佇列 (Queue)
         </div>
-        <div className="queue-container">
+        <div style={{ 
+          display: "flex", 
+          gap: "8px", 
+          justifyContent: "center", 
+          flexWrap: "wrap",
+          minHeight: "50px",
+          alignItems: "center"
+        }}>
           {queue.length === 0 ? (
             <span style={{ color: "#888" }}>空</span>
           ) : (
             queue.map((node, idx) => (
-              <div key={`queue-${idx}`} className="queue-element">
+              <div 
+                key={`queue-${idx}`} 
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  backgroundColor: "#4ecdc4",
+                  borderRadius: "8px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontWeight: "bold",
+                  fontSize: "0.9em",
+                  color: "white",
+                  border: "2px solid #3bb8b0",
+                  flexShrink: 0
+                }}
+              >
                 {node}
               </div>
             ))
@@ -102,77 +152,129 @@ export const DFSVisualization = ({ stepData }) => {
 
   const getNodePosition = (index) => {
     const angle = (index / nodes) * 2 * Math.PI - Math.PI / 2;
-    const radius = 100;
+    const radius = 80;
     return {
-      x: 200 + radius * Math.cos(angle),
-      y: 150 + radius * Math.sin(angle)
+      x: 150 + radius * Math.cos(angle),
+      y: 100 + radius * Math.sin(angle)
     };
   };
 
   return (
-    <div style={{ position: "relative", width: "400px", height: "300px" }}>
-      {/* 繪製邊 */}
-      {graph.map((neighbors, u) =>
-        neighbors.map((v, idx) => {
-          if (u < v) {
-            const posU = getNodePosition(u);
-            const posV = getNodePosition(v);
-            const dx = posV.x - posU.x;
-            const dy = posV.y - posU.y;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    <div style={{ width: "100%", maxWidth: "500px", display: "flex", flexDirection: "column", gap: "15px" }}>
+      {/* 圖形顯示區域 */}
+      <div style={{ position: "relative", width: "100%", height: "230px", marginBottom: "10px" }}>
+        {/* 繪製邊 */}
+        <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+          {graph.map((neighbors, u) =>
+            neighbors.map((v, idx) => {
+              if (u < v) {
+                const posU = getNodePosition(u);
+                const posV = getNodePosition(v);
+                return (
+                  <line
+                    key={`edge-${u}-${v}-${idx}`}
+                    x1={posU.x}
+                    y1={posU.y}
+                    x2={posV.x}
+                    y2={posV.y}
+                    stroke="rgba(199, 112, 240, 0.5)"
+                    strokeWidth="2"
+                  />
+                );
+              }
+              return null;
+            })
+          )}
+        </svg>
 
-            return (
-              <div
-                key={`edge-${u}-${v}-${idx}`}
-                className="graph-edge"
-                style={{
-                  left: `${posU.x}px`,
-                  top: `${posU.y}px`,
-                  width: `${length}px`,
-                  transform: `rotate(${angle}deg)`
-                }}
-              />
-            );
+        {/* 繪製節點 */}
+        {Array.from({ length: nodes }, (_, i) => {
+          const pos = getNodePosition(i);
+          const isVisited = visited.includes(i);
+          const isCurrent = current === i;
+          const inStack = stack.includes(i);
+
+          let bgColor = "#1a1a2e";
+          let borderColor = "#c770f0";
+          let shadow = "none";
+
+          if (isCurrent) {
+            bgColor = "#ff6b6b";
+            borderColor = "#ff6b6b";
+            shadow = "0 0 15px #ff6b6b";
+          } else if (isVisited) {
+            bgColor = "#c770f0";
+            borderColor = "#c770f0";
+          } else if (inStack) {
+            bgColor = "#ff9f43";
+            borderColor = "#ff9f43";
           }
-          return null;
-        })
-      )}
 
-      {/* 繪製節點 */}
-      {Array.from({ length: nodes }, (_, i) => {
-        const pos = getNodePosition(i);
-        const isVisited = visited.includes(i);
-        const isCurrent = current === i;
-        const inStack = stack.includes(i);
-
-        let className = "graph-node";
-        if (isCurrent) className += " current";
-        else if (isVisited) className += " visited";
-        else if (inStack) className += " in-queue";
-
-        return (
-          <div
-            key={`node-${i}`}
-            className={className}
-            style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
-          >
-            {i}
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={`node-${i}`}
+              style={{
+                position: "absolute",
+                left: `${pos.x - 18}px`,
+                top: `${pos.y - 18}px`,
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                backgroundColor: bgColor,
+                border: `2px solid ${borderColor}`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "0.9em",
+                boxShadow: shadow,
+                transition: "all 0.3s ease",
+                zIndex: 2
+              }}
+            >
+              {i}
+            </div>
+          );
+        })}
+      </div>
 
       {/* 堆疊顯示 */}
-      <div style={{ position: "absolute", right: "10px", top: "10px" }}>
-        <div style={{ textAlign: "center", color: "#c770f0", marginBottom: "5px", fontSize: "0.9em" }}>
+      <div style={{ width: "100%", padding: "10px", backgroundColor: "rgba(255, 107, 107, 0.1)", borderRadius: "8px" }}>
+        <div style={{ textAlign: "center", color: "#ff6b6b", marginBottom: "8px", fontSize: "0.9em", fontWeight: "bold" }}>
           堆疊 (Stack)
         </div>
-        <div className="stack-container">
+        <div style={{ 
+          display: "flex", 
+          flexDirection: "column-reverse",
+          gap: "6px", 
+          justifyContent: "flex-end", 
+          alignItems: "center",
+          minHeight: "50px",
+          maxHeight: "150px",
+          overflowY: "auto"
+        }}>
           {stack.length === 0 ? (
             <span style={{ color: "#888" }}>空</span>
           ) : (
             stack.map((node, idx) => (
-              <div key={`stack-${idx}`} className="stack-element">
+              <div 
+                key={`stack-${idx}`} 
+                style={{
+                  width: "70px",
+                  height: "35px",
+                  backgroundColor: "#ff6b6b",
+                  borderRadius: "6px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontWeight: "bold",
+                  fontSize: "0.9em",
+                  color: "white",
+                  border: "2px solid #ff5252",
+                  flexShrink: 0
+                }}
+              >
                 {node}
               </div>
             ))
